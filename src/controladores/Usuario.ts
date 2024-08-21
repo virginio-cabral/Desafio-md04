@@ -22,7 +22,7 @@ export const cadastrarUsuario = async (req: Request, res: Response) => {
             
             
         if (usuariosCadastrados.length > 0) {
-            return res.status(404).json({
+            return res.status(409).json({
                 mensagem: "E-mail já cadastrado"
             })
         }
@@ -47,7 +47,7 @@ export const cadastrarUsuario = async (req: Request, res: Response) => {
 }
 
 export const acessoUsuario = async (req: Request, res: Response) => {
-    const {email, senha} = req.body
+    const {nome, email, senha} = req.body
     
     if (!email || !senha) {
         return res.status(400).json({
@@ -70,14 +70,17 @@ export const acessoUsuario = async (req: Request, res: Response) => {
             }
             
 
-            const aSenhaEstáCorreta = bcrypt.compare(senha, usuarioCadastrado[0].senha);
+            const aSenhaEstáCorreta = await bcrypt.compare(senha, usuarioCadastrado[0].senha);
+
+            if (!aSenhaEstáCorreta) {
+                return res.status(400).json({
+                    mensagem: "Email ou senha inválidos"
+                })
+            }
             
-            // app.post('/login', (req, res) => {
-            //     const user = { id: 1, username: 'user' }; // Exemplo de usuário
-            //     const token = jwt.sign(user, 'secreta', { expiresIn: '1h' }); // Gera o token
-            //     res.json({ token });
-            //   });
-            const token = jwt.sign(req.body, 'jwt', { expiresIn: '1h'});
+            const conteudoToken = {nome, email}
+            const token = jwt.sign(conteudoToken, 'secret', { expiresIn: '1h'});
+            
             return res.status(200).json({token});
 
     } catch (error) {
