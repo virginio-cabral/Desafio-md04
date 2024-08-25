@@ -1,31 +1,20 @@
 CREATE DATABASE resume_ai;
 
 
-CREATE TABLE usuarios (
-    id serial primary key,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL
+CREATE TABLE "usuarios" (
+  "id" serial NOT NULL,
+  "nome" text NOT NULL,
+  "email" text NOT NULL,
+  "senha" text NOT NULL,
+  PRIMARY KEY ("id")
 );
 
 
-CREATE TABLE materias (
-    id serial primary key,
-    nome VARCHAR(255) NOT NULL
+CREATE TABLE "materias" (
+  "id" serial NOT NULL,
+  "nome" text NOT NULL,
+  PRIMARY KEY ("id")
 );
-
-
-CREATE TABLE resumos (
-    id serial primary key,
-    usuario_id INT,
-    materia_id INT,
-    topicos TEXT NOT NULL,
-    descricao TEXT NOT NULL,
-    criado DATE NOT NULL DEFAULT CURRENT_DATE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-    FOREIGN KEY (materia_id) REFERENCES materias(id)
-);
-
 
 INSERT INTO materias (nome) VALUES
 ('Back-end'),
@@ -35,6 +24,19 @@ INSERT INTO materias (nome) VALUES
 ('Design'),
 ('Dados'),
 ('SQL');
+
+CREATE TABLE "resumos" (
+  "id" serial NOT NULL,
+  "usuario_id" int4 NOT NULL,
+  "materia_id" text NOT NULL,
+  "descricao" text NOT NULL,
+  "criado" date NOT NULL DEFAULT now(),
+  PRIMARY KEY ("id"),
+  CONSTRAINT "resumo_usuarios_id_foreign_key" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuarios" ("id"),
+  CONSTRAINT "resumo_materia_id_foreign_key" FOREIGN KEY ("materia_id") REFERENCES "public"."materias" ("id")
+);
+
+
 
 // Comando para listar matérias
 SELECT * FROM materias;
